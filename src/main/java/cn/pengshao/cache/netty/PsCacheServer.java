@@ -1,5 +1,6 @@
 package cn.pengshao.cache.netty;
 
+import cn.pengshao.cache.cmd.CmdFactory;
 import cn.pengshao.cache.plugin.PsPlugin;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -15,6 +16,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -31,6 +33,9 @@ public class PsCacheServer implements PsPlugin {
     EventLoopGroup bossGroup;
     EventLoopGroup workerGroup;
     Channel channel;
+
+    @Autowired
+    CmdFactory cmdFactory;
 
     @Override
     public void init() {
@@ -59,7 +64,7 @@ public class PsCacheServer implements PsPlugin {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline().addLast(new PsCacheDecoder());
-                            ch.pipeline().addLast(new PsCacheHandler());
+                            ch.pipeline().addLast(new PsCacheHandler(cmdFactory));
                         }
                     });
 
