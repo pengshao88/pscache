@@ -30,7 +30,7 @@ public class PsCacheHandler extends SimpleChannelInboundHandler<String> {
             throws Exception {
         String[] args = message.split(CRLF);
         log.debug("PsCacheHandler ===> {}", String.join(",", args));
-        String cmd = args[2].toLowerCase();
+        String cmd = args[2].toUpperCase();
 
         if ("COMMAND".equals(cmd)) {
             // 返回数组 *2 两个命令 $7 字符串长度
