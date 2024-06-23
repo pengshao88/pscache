@@ -1,6 +1,7 @@
 package cn.pengshao.cache.cmd;
 
-import io.netty.channel.ChannelHandlerContext;
+import cn.pengshao.cache.core.PsCache;
+import cn.pengshao.cache.core.Reply;
 import org.springframework.stereotype.Component;
 
 /**
@@ -10,20 +11,21 @@ import org.springframework.stereotype.Component;
  * @date 2024/6/18 21:40
  */
 @Component
-public class PingCmd extends Cmd {
+public class PingCmd implements Cmd {
     public static final String NAME = "PING";
 
+
     @Override
-    public void exec(ChannelHandlerContext ctx, String[] args) {
+    public Reply<?> exec(PsCache cache, String[] args) {
         String ret = "PONG";
         if(args.length >= 5) {
             ret = args[4];
         }
-        simpleString(ctx, ret);
+        return Reply.string(ret);
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return NAME;
     }
 }

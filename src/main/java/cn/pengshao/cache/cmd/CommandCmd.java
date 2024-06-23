@@ -1,6 +1,8 @@
 package cn.pengshao.cache.cmd;
 
-import io.netty.channel.ChannelHandlerContext;
+import cn.pengshao.cache.core.PsCache;
+import cn.pengshao.cache.core.Reply;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -10,21 +12,20 @@ import org.springframework.stereotype.Component;
  * @date 2024/6/18 21:34
  */
 @Component
-public class CommandCmd extends Cmd {
+public class CommandCmd implements Cmd {
     public static final String NAME = "COMMAND";
 
+    // TODO 循环依赖
+    @Autowired
+    private CmdFactory cmdFactory;
+
     @Override
-    public void exec(ChannelHandlerContext ctx, String[] args) {
-        writeByteBuf(ctx, "*2"
-                + CRLF + "$7"
-                + CRLF + "COMMAND"
-                + CRLF + "$4"
-                + CRLF + "PING"
-                + CRLF);
+    public Reply<?> exec(PsCache cache, String[] args) {
+        return Reply.array(cmdFactory.getCommandNames());
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return NAME;
     }
 }
