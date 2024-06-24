@@ -43,14 +43,14 @@ public class PsCacheHandler extends SimpleChannelInboundHandler<String> {
         String cmd = args[2].toUpperCase();
 
         Cmd command = cmdFactory.getCmd(cmd);
+        Reply<?> reply;
         if (command != null) {
-            Reply<?> reply = command.exec(cache, args);
+            reply = command.exec(cache, args);
             log.debug("CMD[{}] => {} => {}", cmd, reply.getType(), reply.getValue());
-            replyContext(ctx, reply);
         } else {
-            Reply<?> reply = Reply.error("ERR unsupported command '" + cmd + "'");
-            replyContext(ctx, reply);
+            reply = Reply.error("ERR unsupported command '" + cmd + "'");
         }
+        replyContext(ctx, reply);
     }
 
     private void replyContext(ChannelHandlerContext ctx, Reply<?> reply) {

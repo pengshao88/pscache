@@ -1,5 +1,6 @@
-package cn.pengshao.cache.cmd;
+package cn.pengshao.cache.cmd.common;
 
+import cn.pengshao.cache.cmd.Cmd;
 import cn.pengshao.cache.core.PsCache;
 import cn.pengshao.cache.core.Reply;
 import org.springframework.stereotype.Component;

@@ -20,7 +20,7 @@ public class CmdFactory {
     @Autowired
     List<Cmd> cmdList;
 
-    Map<String, Cmd> cmdMap;
+    static Map<String, Cmd> cmdMap;
 
     @PostConstruct
     public void init() {
@@ -31,7 +31,7 @@ public class CmdFactory {
         return cmdMap.get(cmdName);
     }
 
-    public String[] getCommandNames() {
+    public static String[] getCommandNames() {
         return cmdMap.keySet().toArray(new String[0]);
     }
 }

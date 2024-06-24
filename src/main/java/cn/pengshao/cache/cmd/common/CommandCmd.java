@@ -1,5 +1,7 @@
-package cn.pengshao.cache.cmd;
+package cn.pengshao.cache.cmd.common;
 
+import cn.pengshao.cache.cmd.Cmd;
+import cn.pengshao.cache.cmd.CmdFactory;
 import cn.pengshao.cache.core.PsCache;
 import cn.pengshao.cache.core.Reply;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +17,9 @@ import org.springframework.stereotype.Component;
 public class CommandCmd implements Cmd {
     public static final String NAME = "COMMAND";
 
-    // TODO 循环依赖
-    @Autowired
-    private CmdFactory cmdFactory;
-
     @Override
     public Reply<?> exec(PsCache cache, String[] args) {
-        return Reply.array(cmdFactory.getCommandNames());
+        return Reply.array(CmdFactory.getCommandNames());
     }
 
     @Override
