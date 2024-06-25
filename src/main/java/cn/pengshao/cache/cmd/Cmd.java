@@ -58,4 +58,14 @@ public interface Cmd {
         }
         return vals;
     }
+
+    // *5 $5 LPUSH $2 l1 $1 a $1 b $1 c
+    default String[] getParamsNoKey(String[] args) {
+        int len = (args.length - 5) / 2;
+        String[] keys = new String[len];
+        for (int i = 0; i < len; i++) {
+            keys[i] = args[6 + i * 2];
+        }
+        return keys;
+    }
 }

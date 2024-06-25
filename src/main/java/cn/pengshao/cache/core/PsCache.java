@@ -1,9 +1,6 @@
 package cn.pengshao.cache.core;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * cache entries.
@@ -27,6 +24,7 @@ public class PsCache {
         return null;
     }
 
+    // ===============  1. String start ===========
     public Integer strlen(String key) {
         return get(key) == null ? 0 : get(key).length();
     }
@@ -80,5 +78,106 @@ public class PsCache {
     public String[] mget(String[] keys) {
         return keys == null ? new String[0] : Arrays.stream(keys)
                 .map(this::get).toArray(String[]::new);
+    }
+
+    // ===============  1. String end ===========
+
+    // ===============  2. list start ===========
+
+    public Integer lpush(String key, String[] vals) {
+        CacheEntry<LinkedList<String>> entry = (CacheEntry<LinkedList<String>>) map.get(key);
+        if(entry == null) {
+            entry = new CacheEntry<>(new LinkedList<>());
+            this.map.put(key, entry);
+        }
+
+        LinkedList<String> exist = entry.getValue();
+        Arrays.stream(vals).forEach(exist::addFirst);
+        return vals.length;
+    }
+
+    public String[] lpop(String key, Integer count) {
+        LinkedList<String> exist = getList(key);
+        if (exist == null) {
+            return null;
+        }
+
+        int minLength = Math.min(count, exist.size());
+        String[] ret = new String[minLength];
+        for (int i = 0; i < minLength; i++) {
+            ret[i] = exist.removeFirst();
+        }
+        return ret;
+    }
+
+    private LinkedList<String> getList(String key) {
+        CacheEntry<LinkedList<String>> entry = (CacheEntry<LinkedList<String>>) map.get(key);
+        if(entry == null) {
+            return null;
+        }
+        return entry.getValue();
+    }
+
+    public Integer rpush(String key, String[] vals) {
+        CacheEntry<LinkedList<String>> entry = (CacheEntry<LinkedList<String>>) map.get(key);
+        if(entry == null) {
+            entry = new CacheEntry<>(new LinkedList<>());
+            this.map.put(key, entry);
+        }
+
+        LinkedList<String> exist = entry.getValue();
+        Arrays.stream(vals).forEach(exist::addLast);
+        return vals.length;
+    }
+
+    public String[] rpop(String key, Integer count) {
+        LinkedList<String> exist = getList(key);
+        if (exist == null) {
+            return null;
+        }
+
+        int minLength = Math.min(count, exist.size());
+        String[] ret = new String[minLength];
+        for (int i = 0; i < minLength; i++) {
+            ret[i] = exist.removeLast();
+        }
+        return ret;
+    }
+
+    public Integer llen(String key) {
+        LinkedList<String> exist = getList(key);
+        return exist == null ? 0 : exist.size();
+    }
+
+    public String lindex(String key, int index) {
+        LinkedList<String> exist = getList(key);
+        if (exist == null) {
+            return null;
+        }
+
+        if (index >= exist.size()) {
+            return null;
+        }
+        return exist.get(index);
+    }
+
+    public String[] lrange(String key, int start, int end) {
+        LinkedList<String> exist = getList(key);
+        if (exist == null) {
+            return null;
+        }
+        int size = exist.size();
+        if (start >= size || start > end) {
+            return null;
+        }
+
+        if (end >= size) {
+            end = size - 1;
+        }
+        int minLength = Math.min(size, end - start + 1);
+        return Arrays.stream(exist.toArray(new String[0]))
+                .skip(start)
+                .limit(minLength)
+                .toArray(String[]::new);
     }
 }
