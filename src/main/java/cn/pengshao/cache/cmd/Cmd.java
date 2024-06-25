@@ -21,6 +21,8 @@ public interface Cmd {
 
     String name();
 
+
+    // *3 $3 set $1 a $3 100
     default String getKey(String[] args) {
         return args[4];
     }
@@ -29,6 +31,7 @@ public interface Cmd {
         return args[6];
     }
 
+    // *4 $6 EXISTS $1 a $1 b $1 c
     default String[] getParams(String[] args) {
         int len = (args.length - 3) / 2;
         String[] keys = new String[len];
@@ -36,5 +39,23 @@ public interface Cmd {
             keys[i] = args[4 + i * 2];
         }
         return keys;
+    }
+
+    default String[] getKeys(String[] args) {
+        int len = (args.length - 3) / 4;
+        String[] keys = new String[len];
+        for (int i = 0; i < len; i++) {
+            keys[i] = args[4 + i * 4];
+        }
+        return keys;
+    }
+
+    default String[] getVals(String[] args) {
+        int len = (args.length - 3) / 4;
+        String[] vals = new String[len];
+        for (int i = 0; i < len; i++) {
+            vals[i] = args[6 + i * 4];
+        }
+        return vals;
     }
 }
