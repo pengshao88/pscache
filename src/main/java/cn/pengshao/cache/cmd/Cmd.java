@@ -68,4 +68,23 @@ public interface Cmd {
         }
         return keys;
     }
+
+    // *6 $4 HSET $2 h1 $1 a $3 100 $1 b $3 200
+    default String[] getHKeys(String[] args) {
+        int len = (args.length - 5) / 4;
+        String[] keys = new String[len];
+        for (int i = 0; i < len; i++) {
+            keys[i] = args[6 + i * 4];
+        }
+        return keys;
+    }
+
+    default String[] getHVals(String[] args) {
+        int len = (args.length - 5) / 4;
+        String[] vals = new String[len];
+        for (int i = 0; i < len; i++) {
+            vals[i] = args[8 + i * 4];
+        }
+        return vals;
+    }
 }

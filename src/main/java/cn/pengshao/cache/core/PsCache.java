@@ -272,4 +272,21 @@ public class PsCache {
     }
 
     // ===============  3. set end ===========
+
+    // ===============  4. hash start ===========
+    public Integer hset(String key, String[] hKeys, String[] hVals) {
+        if (hKeys == null || hKeys.length == 0) return 0;
+        if (hVals == null || hVals.length == 0) return 0;
+        CacheEntry<LinkedHashMap<String, String>> entry = (CacheEntry<LinkedHashMap<String, String>>) map.get(key);
+        if (entry == null) {
+            entry = new CacheEntry<>(new LinkedHashMap<>());
+            this.map.put(key, entry);
+        }
+        LinkedHashMap<String, String> exist = entry.getValue();
+        int min = Math.min(hKeys.length, hVals.length);
+        for (int i = 0; i < min; i++) {
+            exist.put(hKeys[i], hVals[i]);
+        }
+        return min;
+    }
 }
