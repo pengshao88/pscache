@@ -1,5 +1,6 @@
 package cn.pengshao.cache.core;
 
+import java.security.SecureRandom;
 import java.util.*;
 
 /**
@@ -180,4 +181,95 @@ public class PsCache {
                 .limit(minLength)
                 .toArray(String[]::new);
     }
+    // ===============  2. list end ===========
+
+    // ===============  3. set start ===========
+    public Integer sadd(String key, String[] vals) {
+        if (vals == null || vals.length == 0) {
+            return 0;
+        }
+
+        CacheEntry<LinkedHashSet<String>> entry = (CacheEntry<LinkedHashSet<String>>) map.get(key);
+        if (entry == null) {
+            entry = new CacheEntry<>(new LinkedHashSet<>());
+            this.map.put(key, entry);
+        }
+        LinkedHashSet<String> exist = entry.getValue();
+        return (int) Arrays.stream(vals).filter(exist::add).count();
+    }
+
+    public String[] smembers(String key) {
+        LinkedHashSet<String> exist = getSet(key);
+        if (exist == null) {
+            return new String[0];
+        }
+
+        return exist.toArray(String[]::new);
+    }
+
+    private LinkedHashSet<String> getSet(String key) {
+        CacheEntry<LinkedHashSet<String>> entry = (CacheEntry<LinkedHashSet<String>>) map.get(key);
+        if (entry == null) {
+            return null;
+        }
+        return entry.getValue();
+    }
+
+    public Integer scard(String key) {
+        LinkedHashSet<String> exist = getSet(key);
+        if (exist == null) {
+            return 0;
+        }
+
+        return exist.size();
+    }
+
+    SecureRandom random = new SecureRandom();
+
+    /**
+     * 随机弹出
+     *
+     * @param key key
+     * @param count 弹出个数
+     * @return 弹出数组
+     */
+    public String[] spop(String key, int count) {
+        LinkedHashSet<String> exist = getSet(key);
+        if (exist == null) {
+            return new String[0];
+        }
+
+        int minLength = Math.min(count, exist.size());
+        String[] ret = new String[minLength];
+        int index = 0;
+        while (index < minLength) {
+            int randomIndex = random.nextInt(exist.size());
+            String[] array = exist.toArray(String[]::new);
+            String obj = array[randomIndex];
+            exist.remove(obj);
+            ret[index++] = obj;
+        }
+        return ret;
+    }
+
+    public Integer srem(String key, String[] vals) {
+        LinkedHashSet<String> exist = getSet(key);
+        if (exist == null) {
+            return 0;
+        }
+
+        return vals == null ? 0 : (int) Arrays.stream(vals)
+                .filter(exist::remove).count();
+    }
+
+    public Integer sismember(String key, String val) {
+        LinkedHashSet<String> exist = getSet(key);
+        if (exist == null) {
+            return 0;
+        }
+
+        return exist.contains(val) ? 1 : 0;
+    }
+
+    // ===============  3. set end ===========
 }
