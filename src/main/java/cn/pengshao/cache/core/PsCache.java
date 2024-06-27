@@ -360,5 +360,77 @@ public class PsCache {
 
     // ===============  4. hash end ===========
 
-    // ===============  4. zset start ===========
+    // ===============  5. zset start ===========
+    public Integer zadd(String key, String[] vals, double[] scores) {
+        CacheEntry<LinkedHashSet<ZsetEntry>> entry = (CacheEntry<LinkedHashSet<ZsetEntry>>) map.get(key);
+        if(entry == null) {
+            entry = new CacheEntry<>(new LinkedHashSet<>());
+            this.map.put(key, entry);
+        }
+        LinkedHashSet<ZsetEntry> exist = entry.getValue();
+        int min = Math.min(vals.length, scores.length);
+        for (int i = 0; i < min; i++) {
+            exist.add(new ZsetEntry(vals[i], scores[i]));
+        }
+        return min;
+    }
+
+    private LinkedHashSet<ZsetEntry> getZset(String key) {
+        CacheEntry<LinkedHashSet<ZsetEntry>> entry = (CacheEntry<LinkedHashSet<ZsetEntry>>) map.get(key);
+        if(entry == null) {
+            return null;
+        }
+        return entry.getValue();
+    }
+
+    public Integer zcard(String key) {
+        LinkedHashSet<ZsetEntry> exist = getZset(key);
+        return exist == null ? 0 : exist.size();
+    }
+
+    public Double zscore(String key, String member) {
+        LinkedHashSet<ZsetEntry> exist = getZset(key);
+        if (exist == null) {
+            return null;
+        }
+
+        return exist.stream()
+                .filter(e -> e.getValue().equals(member))
+                .map(ZsetEntry::getScore)
+                .findFirst()
+                .orElse(null);
+    }
+
+    public Integer zrem(String key, String[] members) {
+        LinkedHashSet<ZsetEntry> exist = getZset(key);
+        if (exist == null) {
+            return 0;
+        }
+        return members == null ? 0 : (int) Arrays.stream(members)
+                .map(e -> exist.removeIf(y -> y.getValue().equals(e)))
+                .filter(x -> x).count();
+    }
+
+    public Integer zrank(String key, String member) {
+        LinkedHashSet<ZsetEntry> exist = getZset(key);
+        if (exist == null) {
+            return null;
+        }
+        Double zscore = zscore(key, member);
+        return zscore == null ? null : (int) exist.stream()
+                .filter(e -> e.getScore() < zscore).count();
+    }
+
+    public Integer zcount(String key, double min, double max) {
+        LinkedHashSet<ZsetEntry> exist = getZset(key);
+        if (exist == null) {
+            return 0;
+        }
+
+        return (int) exist.stream()
+                .filter(e -> e.getScore() >= min && e.getScore() <= max)
+                .count();
+    }
+
+    // ===============  5. zset end ===========
 }

@@ -15,7 +15,10 @@ import org.springframework.stereotype.Component;
 public class ZscoreCmd implements Cmd {
     @Override
     public Reply<?> exec(PsCache cache, String[] args) {
-        return null;
+        String key = getKey(args);
+        String member = getVal(args);
+        Double zscore = cache.zscore(key, member);
+        return Reply.string(zscore == null ? null : zscore.toString());
     }
 
     @Override

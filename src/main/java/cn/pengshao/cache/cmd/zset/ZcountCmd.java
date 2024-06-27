@@ -15,7 +15,11 @@ import org.springframework.stereotype.Component;
 public class ZcountCmd implements Cmd {
     @Override
     public Reply<?> exec(PsCache cache, String[] args) {
-        return null;
+        String key = getKey(args);
+        String[] params = getParamsNoKey(args);
+        double min = Double.parseDouble(params[0]);
+        double max = Double.parseDouble(params[1]);
+        return Reply.integer(cache.zcount(key, min, max));
     }
 
     @Override

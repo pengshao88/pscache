@@ -15,7 +15,9 @@ import org.springframework.stereotype.Component;
 public class ZremCmd implements Cmd {
     @Override
     public Reply<?> exec(PsCache cache, String[] args) {
-        return null;
+        String key = getKey(args);
+        String[] members = getParamsNoKey(args);
+        return Reply.integer(cache.zrem(key, members));
     }
 
     @Override

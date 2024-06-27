@@ -5,6 +5,8 @@ import cn.pengshao.cache.core.PsCache;
 import cn.pengshao.cache.core.Reply;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+
 /**
  * ZADD 命令
  *
@@ -15,7 +17,14 @@ import org.springframework.stereotype.Component;
 public class ZaddCmd implements Cmd {
     @Override
     public Reply<?> exec(PsCache cache, String[] args) {
-        return null;
+        String key = getKey(args);
+        String[] scores = getHKeys(args);
+        String[] vals = getHVals(args);
+        return Reply.integer(cache.zadd(key, vals, toDouble(scores)));
+    }
+
+    double[] toDouble(String[] scores) {
+        return Arrays.stream(scores).mapToDouble(Double::parseDouble).toArray();
     }
 
     @Override

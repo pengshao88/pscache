@@ -15,7 +15,10 @@ import org.springframework.stereotype.Component;
 public class ZrankCmd implements Cmd {
     @Override
     public Reply<?> exec(PsCache cache, String[] args) {
-        return null;
+        String key = getKey(args);
+        String val = getVal(args);
+        Integer zrank = cache.zrank(key, val);
+        return zrank == null ? Reply.string(null) : Reply.integer(zrank);
     }
 
     @Override
