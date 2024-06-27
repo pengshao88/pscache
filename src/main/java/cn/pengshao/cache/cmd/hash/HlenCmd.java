@@ -15,7 +15,8 @@ import org.springframework.stereotype.Component;
 public class HlenCmd implements Cmd {
     @Override
     public Reply<?> exec(PsCache cache, String[] args) {
-        return null;
+        String key = getKey(args);
+        return Reply.integer(cache.hlen(key));
     }
 
     @Override

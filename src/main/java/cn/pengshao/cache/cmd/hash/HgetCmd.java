@@ -15,7 +15,9 @@ import org.springframework.stereotype.Component;
 public class HgetCmd implements Cmd {
     @Override
     public Reply<?> exec(PsCache cache, String[] args) {
-        return null;
+        String key = getKey(args);
+        String field = getVal(args);
+        return Reply.string(cache.hget(key, field));
     }
 
     @Override

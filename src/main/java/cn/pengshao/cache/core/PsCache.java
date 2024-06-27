@@ -2,6 +2,7 @@ package cn.pengshao.cache.core;
 
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * cache entries.
@@ -289,4 +290,75 @@ public class PsCache {
         }
         return min;
     }
+
+    public String hget(String key, String hKey) {
+        LinkedHashMap<String, String> exist = getHashMap(key);
+        if (exist == null) {
+            return null;
+        }
+        return exist.get(hKey);
+    }
+
+    private LinkedHashMap<String, String> getHashMap(String key) {
+        CacheEntry<LinkedHashMap<String, String>> entry = (CacheEntry<LinkedHashMap<String, String>>) map.get(key);
+        if (entry == null ) {
+            return null;
+        }
+        return entry.getValue();
+    }
+
+    public String[] hgetall(String key) {
+        LinkedHashMap<String, String> exist = getHashMap(key);
+        if (exist == null) {
+            return new String[0];
+        }
+
+        return exist.entrySet().stream()
+                .flatMap(e -> Stream.of(e.getKey(), e.getValue())).toArray(String[]::new);
+    }
+
+    public Integer hlen(String key) {
+        LinkedHashMap<String, String> exist = getHashMap(key);
+        if (exist == null) {
+            return 0;
+        }
+        return exist.size();
+    }
+
+    public Integer hdel(String key, String[] hKeys) {
+        LinkedHashMap<String, String> exist = getHashMap(key);
+        if (exist == null) {
+            return 0;
+        }
+        return hKeys == null ? 0 : (int) Arrays.stream(hKeys)
+                .map(exist::remove).filter(Objects::nonNull).count();
+    }
+
+    public String[] hmget(String key, String[] hKeys) {
+        LinkedHashMap<String, String> exist = getHashMap(key);
+        int size = hKeys == null ? 0: hKeys.length;
+        if (exist == null) {
+            return new String[size];
+        }
+        if (hKeys == null) {
+            return new String[0];
+        }
+
+        return Arrays.stream(hKeys)
+                .map(exist::get)
+                .toArray(String[]::new);
+    }
+
+    public Integer hexists(String key, String hKey) {
+        LinkedHashMap<String, String> exist = getHashMap(key);
+        if (exist == null) {
+            return 0;
+        }
+
+        return exist.containsKey(hKey) ? 1 : 0;
+    }
+
+    // ===============  4. hash end ===========
+
+    // ===============  4. zset start ===========
 }
